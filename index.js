@@ -1,12 +1,15 @@
 import "./style.css";
 
 const $ = (el) => document.querySelector(el);
-const $$ = (el) => document.querySelectorAll(el);
-
-// $("h1").innerHTML = "Hola Mundo";
 
 const canvas = $("canvas");
 const c = canvas.getContext("2d");
+
+$(".start-button").addEventListener("click", () => {
+  console.log(gameStarted);
+  gameStarted = true;
+});
+
 
 const cW = (canvas.width = 1024);
 const cH = (canvas.height = 576);
@@ -88,6 +91,7 @@ const ball = new Player({
 $("#score-p1").innerHTML = player1.score;
 $("#score-p2").innerHTML = player2.score;
 
+let gameStarted = false;
 let pause = false;
 let oldVelocity = { x: 0, y: 0 };
 
@@ -111,9 +115,17 @@ function animate() {
   window.requestAnimationFrame(animate);
   c.fillStyle = "black";
   c.fillRect(0, 0, cW, cH);
-  player1.update();
-  player2.update();
-  ball.update();
+
+  player1.draw();
+  player2.draw();
+
+  if (gameStarted) {
+    $('.start-button').style.opacity = pause ? 1 : 0;
+    $('.start-button').classList.remove('start');
+    $('.start-button').classList.add('pause');
+
+    gameOn();
+  }
 
   player1.direction.y = 0;
   player2.direction.y = 0;
@@ -232,6 +244,17 @@ function animate() {
       $("#score-p2").innerHTML = ++player2.score;
       setTimeout(ballInit, 2000, 1);
     }
+    
+    if (player1.score === 3) {
+      endGame();
+    }
+    if (player2.score === 3) {
+      console.log('end game');
+    }
+  }
+
+  function endGame() {
+    console.log('end game');
   }
 
   function ballInit(n) {
@@ -247,6 +270,12 @@ function animate() {
     player2.position.x = cW - 80;
     player2.position.y = cH / 2 - 50;
   }
+
+  function gameOn() {
+    player1.update();
+    player2.update();
+    ball.update();
+  }
 }
 
 animate();
@@ -254,18 +283,9 @@ animate();
 /* EVENTS */
 
 window.addEventListener("keydown", (e) => {
-  if (e.key === " ") {
-    pause = pause ? false : true;
-    console.log(pause);
-    if (pause) {
-      oldVelocity.x = ball.velocity.x;
-      ball.velocity.x = 0;
-      oldVelocity.y = ball.velocity.y;
-      ball.velocity.y = 0;
-    } else {
-      ball.velocity.x = oldVelocity.x;
-      ball.velocity.y = oldVelocity.y;
-    } 
+  
+  if ((e.key === " ")){
+    pauseGame();
   }
   if (!pause) {
     switch (e.key) {
@@ -286,6 +306,23 @@ window.addEventListener("keydown", (e) => {
         player2.lastKey = "ArrowDown";
         break;
     }
+  }
+
+  function pauseGame() {
+    pause = pause ? false : true;
+    
+    if (pause) {
+      $('.start-button').innerHTML =  '<h2>Paused <br/><br/>Press Space to resume</h2>';
+      oldVelocity.x = ball.velocity.x;
+      oldVelocity.y = ball.velocity.y;
+      ball.velocity.x = 0;
+      ball.velocity.y = 0;
+
+    } else {
+      ball.velocity.x = oldVelocity.x;
+      ball.velocity.y = oldVelocity.y;
+    }
+
   }
 });
 
