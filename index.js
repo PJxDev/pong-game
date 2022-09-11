@@ -6,11 +6,27 @@ const canvas = $("canvas");
 const c = canvas.getContext("2d");
 
 $(".start-button").addEventListener("click", () => {
-  console.log(gameStarted);
   gameStarted = true;
+  let rx = Math.floor(Math.random() * 2);
+  rx = rx != 1 ? -1 : 1
+  let ry = Math.floor(Math.random() * 2);
+  ry = ry != 1 ? -1 : 1
+
+  ball.velocity.x = 4 * rx;
+  ball.velocity.y = 4 * ry;
+
+  pause = false
+  
+  if (reset){
+    player1.score = 0;
+    player2.score = 0;
+    $("#score-p1").innerHTML = player1.score;
+    $("#score-p2").innerHTML = player2.score;
+    $('#subtitle').innerHTML = 'First getting 3 points wins!'
+  }
 });
 
-
+$('#subtitle').innerHTML = 'First getting 3 points wins!'
 const cW = (canvas.width = 1024);
 const cH = (canvas.height = 576);
 
@@ -79,8 +95,8 @@ const ball = new Player({
     y: cH / 2 - 7,
   },
   velocity: {
-    x: 4,
-    y: 4,
+    x: 5,
+    y: 5,
   },
   size: {
     width: 15,
@@ -91,6 +107,7 @@ const ball = new Player({
 $("#score-p1").innerHTML = player1.score;
 $("#score-p2").innerHTML = player2.score;
 
+let reset = false;
 let gameStarted = false;
 let pause = false;
 let oldVelocity = { x: 0, y: 0 };
@@ -114,17 +131,34 @@ const keys = {
 function animate() {
   window.requestAnimationFrame(animate);
   c.fillStyle = "black";
-  c.fillRect(0, 0, cW, cH);
+  c.fillRect(0, 0, cW, cH)
+  
+  c.beginPath()
+  c.strokeStyle = "white";
+  c.moveTo(0, 0);
+  c.lineWidth = 15;
+  c.lineCap = 'round';
+  c.lineTo(1024, 0);
+  c.lineTo(1024,576);
+  c.lineTo(0,576);
+  c.lineTo(0,0);
+  c.stroke();
 
   player1.draw();
   player2.draw();
 
   if (gameStarted) {
     $('.start-button').style.opacity = pause ? 1 : 0;
+    $('.start-button').style.cursor = 'default';
     $('.start-button').classList.remove('start');
     $('.start-button').classList.add('pause');
 
     gameOn();
+  }else{
+  $('.start-button').style.opacity = 1;
+    $('.start-button').classList.add('start');
+    $('.start-button').style.cursor = 'pointer';
+    $('.start-button').innerHTML = '<h2>Start Game</h2>';
   }
 
   player1.direction.y = 0;
@@ -147,7 +181,7 @@ function animate() {
   /* ball */
   if (
     ball.position.y + ball.size.height + ball.velocity.y >= cH ||
-    ball.position.y <= 0
+    ball.position.y + ball.velocity.y <= 0
   ) {
     ball.velocity.y *= -1;
   }
@@ -174,62 +208,65 @@ function animate() {
   if (player2.position.y <= 0) {
     player2.position.y = 0;
   }
-
+  
   /* Players with the ball */
-
-  /* Player2 */
+  /* Player1 */
+let bvx = ball.velocity.x
+let bvy = ball.velocity.y
+let pvy = player2.velocity.y
 
   if (
-    (ball.position.x + ball.size.width >= player2.position.x &&
-      ball.position.x <= player2.position.x &&
-      ball.position.y <= player2.position.y + player2.size.height &&
-      ball.position.y + ball.size.height >= player2.position.y) ||
-    (ball.position.x + ball.size.width >=
-      player2.position.x + player2.size.width &&
-      ball.position.x <= player2.position.x + player2.size.width &&
-      ball.position.y <= player2.position.y + player2.size.height &&
-      ball.position.y + ball.size.height >= player2.position.y)
+    (ball.position.x + ball.size.width + bvx >= player1.position.x &&
+      ball.position.x + bvx <= player1.position.x &&
+      ball.position.y + bvy <= player1.position.y + player1.size.height + player1.velocity.y&&
+      ball.position.y + ball.size.height + bvy >= player1.position.y + player1.velocity.y) ||
+    (ball.position.x + ball.size.width + bvx >=
+      player1.position.x + player1.size.width &&
+      ball.position.x + bvx <= player1.position.x + player1.size.width &&
+      ball.position.y + bvy <= player1.position.y + player1.size.height + player1.velocity.y&&
+      ball.position.y + ball.size.height + bvy >= player1.position.y+ player1.velocity.y)
   ) {
     ball.velocity.x *= -1;
   }
   if (
-    (ball.position.x + ball.size.width >= player2.position.x &&
-      ball.position.x <= player2.position.x + player2.size.width &&
-      ball.position.y + ball.size.height >= player2.position.y &&
-      ball.position.y <= player2.position.y) ||
-    (ball.position.x + ball.size.width >= player2.position.x &&
-      ball.position.x <= player2.position.x + player2.size.width &&
-      ball.position.y <= player2.position.y + player2.size.height &&
-      ball.position.y + ball.size.height >=
-        player2.position.y + player2.size.height)
+    (ball.position.x + ball.size.width + bvx >= player1.position.x &&
+      ball.position.x + bvx <= player1.position.x + player1.size.width &&
+      ball.position.y + ball.size.height + bvy >= player1.position.y + player1.velocity.y&&
+      ball.position.y + bvy <= player1.position.y + player1.velocity.y) ||
+    (ball.position.x + ball.size.width + bvx >= player1.position.x &&
+      ball.position.x + bvx <= player1.position.x + player1.size.width &&
+      ball.position.y + bvy <= player1.position.y + player1.size.height + player1.velocity.y&&
+      ball.position.y + ball.size.height + bvy >=
+        player1.position.y + player1.size.height + player1.velocity.y)
   ) {
     ball.velocity.y *= -1;
   }
-  /* Player1 */
+  
+  /* Player2 */
 
   if (
-    (ball.position.x + ball.size.width >= player1.position.x &&
-      ball.position.x <= player1.position.x &&
-      ball.position.y <= player1.position.y + player1.size.height &&
-      ball.position.y + ball.size.height >= player1.position.y) ||
-    (ball.position.x + ball.size.width >=
-      player1.position.x + player1.size.width &&
-      ball.position.x <= player1.position.x + player1.size.width &&
-      ball.position.y <= player1.position.y + player1.size.height &&
-      ball.position.y + ball.size.height >= player1.position.y)
+    (ball.position.x + ball.size.width + bvx>= player2.position.x &&
+      ball.position.x + bvx<= player2.position.x &&
+      ball.position.y + bvy <= player2.position.y + player2.size.height  + pvy&&
+      ball.position.y + ball.size.height + bvy >= player2.position.y + pvy) ||
+    (ball.position.x + ball.size.width + bvx>=
+      player2.position.x + player2.size.width &&
+      ball.position.x + bvx<= player2.position.x + player2.size.width &&
+      ball.position.y + bvy <= player2.position.y + player2.size.height  + pvy&&
+      ball.position.y + ball.size.height + bvy >= player2.position.y + pvy)
   ) {
     ball.velocity.x *= -1;
   }
   if (
-    (ball.position.x + ball.size.width >= player1.position.x &&
-      ball.position.x <= player1.position.x + player1.size.width &&
-      ball.position.y + ball.size.height >= player1.position.y &&
-      ball.position.y <= player1.position.y) ||
-    (ball.position.x + ball.size.width >= player1.position.x &&
-      ball.position.x <= player1.position.x + player1.size.width &&
-      ball.position.y <= player1.position.y + player1.size.height &&
-      ball.position.y + ball.size.height >=
-        player1.position.y + player1.size.height)
+    (ball.position.x + ball.size.width + bvx>= player2.position.x &&
+      ball.position.x + bvx<= player2.position.x + player2.size.width &&
+      ball.position.y + ball.size.height + bvy >= player2.position.y  + pvy&&
+      ball.position.y + bvy <= player2.position.y + pvy) ||
+    (ball.position.x + ball.size.width + bvx>= player2.position.x &&
+      ball.position.x + bvx<= player2.position.x + player2.size.width &&
+      ball.position.y + bvy <= player2.position.y + player2.size.height  + pvy&&
+      ball.position.y + ball.size.height + bvy >=
+        player2.position.y + player2.size.height + pvy)
   ) {
     ball.velocity.y *= -1;
   }
@@ -246,15 +283,18 @@ function animate() {
     }
     
     if (player1.score === 3) {
+      $('#subtitle').innerHTML = 'PLAYER 1 WINS!!!'
       endGame();
     }
     if (player2.score === 3) {
-      console.log('end game');
+      $('#subtitle').innerHTML = 'PLAYER 2 WINS!!!'
+      endGame()
     }
   }
 
   function endGame() {
-    console.log('end game');
+    gameStarted = false
+    reset = true
   }
 
   function ballInit(n) {
