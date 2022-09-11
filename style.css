@@ -67,7 +67,6 @@ h1 {
   max-width: max-content;
   padding:10px;
   transition: all 0.2s;
-  z-index: 9;
 }
 .start:hover{
   color: black;
@@ -97,15 +96,3 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}

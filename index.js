@@ -6,11 +6,18 @@ const canvas = $("canvas");
 const c = canvas.getContext("2d");
 
 $(".start-button").addEventListener("click", () => {
-  console.log(gameStarted);
   gameStarted = true;
+  
+  if (reset){
+    player1.score = 0;
+    player2.score = 0;
+    $("#score-p1").innerHTML = player1.score;
+    $("#score-p2").innerHTML = player2.score;
+    $('#subtitle').innerHTML = 'First getting 3 points wins!'
+  }
 });
 
-
+$('#subtitle').innerHTML = 'First getting 3 points wins!'
 const cW = (canvas.width = 1024);
 const cH = (canvas.height = 576);
 
@@ -79,8 +86,8 @@ const ball = new Player({
     y: cH / 2 - 7,
   },
   velocity: {
-    x: 4,
-    y: 4,
+    x: 5,
+    y: 5,
   },
   size: {
     width: 15,
@@ -91,6 +98,7 @@ const ball = new Player({
 $("#score-p1").innerHTML = player1.score;
 $("#score-p2").innerHTML = player2.score;
 
+let reset = false;
 let gameStarted = false;
 let pause = false;
 let oldVelocity = { x: 0, y: 0 };
@@ -114,7 +122,18 @@ const keys = {
 function animate() {
   window.requestAnimationFrame(animate);
   c.fillStyle = "black";
-  c.fillRect(0, 0, cW, cH);
+  c.fillRect(0, 0, cW, cH)
+  
+  c.beginPath()
+  c.strokeStyle = "white";
+  c.moveTo(0, 0);
+  c.lineWidth = 15;
+  c.lineCap = 'round';
+  c.lineTo(1024, 0);
+  c.lineTo(1024,576);
+  c.lineTo(0,576);
+  c.lineTo(0,0);
+  c.stroke();
 
   player1.draw();
   player2.draw();
@@ -125,6 +144,10 @@ function animate() {
     $('.start-button').classList.add('pause');
 
     gameOn();
+  }else{
+  $('.start-button').style.opacity = 1;
+    $('.start-button').classList.add('start');
+    $('.start-button').innerHTML = '<h2>Start Game</h2>';
   }
 
   player1.direction.y = 0;
@@ -246,15 +269,18 @@ function animate() {
     }
     
     if (player1.score === 3) {
+      $('#subtitle').innerHTML = 'PLAYER 1 WINS!!!'
       endGame();
     }
     if (player2.score === 3) {
-      console.log('end game');
+      $('#subtitle').innerHTML = 'PLAYER 2 WINS!!!'
+      endGame()
     }
   }
 
   function endGame() {
-    console.log('end game');
+    gameStarted = false
+    reset = true
   }
 
   function ballInit(n) {
