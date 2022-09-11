@@ -6,16 +6,19 @@ const canvas = $("canvas");
 const c = canvas.getContext("2d");
 
 $(".start-button").addEventListener("click", () => {
-  gameStarted = true;
-  let rx = Math.floor(Math.random() * 2);
-  rx = rx != 1 ? -1 : 1
-  let ry = Math.floor(Math.random() * 2);
-  ry = ry != 1 ? -1 : 1
+  if (!gameStarted) {  
 
-  ball.velocity.x = 4 * rx;
-  ball.velocity.y = 4 * ry;
-
-  pause = false
+    gameStarted = true;
+    let rx = Math.floor(Math.random() * 2);
+    rx = rx != 1 ? -1 : 1
+    let ry = Math.floor(Math.random() * 2);
+    ry = ry != 1 ? -1 : 1
+    
+    ball.velocity.x = 4 * rx;
+    ball.velocity.y = 4 * ry;
+    
+    pause = false
+  }
   
   if (reset){
     player1.score = 0;
@@ -25,6 +28,7 @@ $(".start-button").addEventListener("click", () => {
     $('#subtitle').innerHTML = 'First getting 3 points wins!'
   }
 });
+
 
 $('#subtitle').innerHTML = 'First getting 3 points wins!'
 const cW = (canvas.width = 1024);
