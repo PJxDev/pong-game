@@ -13,21 +13,19 @@ import {
   soundMode,
 } from "./index";
 
-function soundPlayers(){
-  
-  if(!soundMode) return;
+function soundPlayers() {
+  if (!soundMode) return;
 
   let n = Math.floor(Math.random() * 2);
-  n = n!==1 ? 2 : 1
-  if (n===1){
-    bleep1.currentTime = 0
-    bleep1.play()
-  };
-  if (n===2){
-    bleep2.currentTime = 0
+  n = n !== 1 ? 2 : 1;
+  if (n === 1) {
+    bleep1.currentTime = 0;
+    bleep1.play();
+  }
+  if (n === 2) {
+    bleep2.currentTime = 0;
     bleep2.play();
-  } 
-    
+  }
 }
 
 /* COLLISIONS */
@@ -72,19 +70,66 @@ export function ballOut(timer, setTimer) {
     endGame();
   }
 }
+
+/* Ball with the Asteroids */
+export function asteroidCollisions(asteroidArray) {
+  asteroidArray.forEach(function (asteroid) {
+    if (
+      (ball.position.x + ball.velocity.x <=
+        asteroid.position.x + asteroid.size.width + asteroid.velocity.x &&
+        ball.position.x + ball.size.width + ball.velocity.x >=
+          asteroid.position.x + asteroid.size.width + asteroid.velocity.x &&
+        ball.position.y + ball.size.height + ball.velocity.y >=
+          asteroid.position.y + asteroid.velocity.y &&
+        ball.position.y + ball.velocity.y <=
+          asteroid.position.y + asteroid.size.height + asteroid.velocity.y) ||
+      (ball.position.x + ball.velocity.x <=
+        asteroid.position.x + asteroid.velocity.x &&
+        ball.position.x + ball.size.width + ball.velocity.x >=
+          asteroid.position.x + asteroid.velocity.x &&
+        ball.position.y + ball.size.height + ball.velocity.y >=
+          asteroid.position.y + asteroid.velocity.y &&
+        ball.position.y + ball.velocity.y <=
+          asteroid.position.y + asteroid.size.height + asteroid.velocity.y)
+    ) {
+      ball.velocity.x *= -1;
+    }
+    if (
+      (ball.position.x + ball.velocity.x <=
+        asteroid.position.x + asteroid.size.width + asteroid.velocity.x &&
+        ball.position.x + ball.size.width + ball.velocity.x >=
+          asteroid.position.x + asteroid.velocity.x &&
+        ball.position.y + ball.size.height + ball.velocity.y >=
+          asteroid.position.y + asteroid.velocity.y &&
+        ball.position.y + ball.velocity.y <=
+          asteroid.position.y + asteroid.size.height + asteroid.velocity.y) ||
+      (ball.position.x + ball.velocity.x <=
+        asteroid.position.x + asteroid.size.width + asteroid.velocity.x &&
+        ball.position.x + ball.size.width + ball.velocity.x >=
+          asteroid.position.x + asteroid.velocity.x &&
+        ball.position.y + ball.size.height + ball.velocity.y >=
+          asteroid.position.y + asteroid.size.height + asteroid.velocity.y &&
+        ball.position.y + ball.velocity.y <=
+          asteroid.position.y + asteroid.size.height + asteroid.velocity.y)
+    ) {
+      ball.velocity.y *= -1;
+    }
+  });
+}
+
 /* Players with the frame */
 export function playersCollisions() {
   if (player1.position.y + player1.size.height >= cH) {
-    player1.position.y = cH - player1.size.height;
+    player1.position.y = cH - player1.size.height -2;
   }
   if (player1.position.y <= 0) {
-    player1.position.y = 0;
+    player1.position.y = 2;
   }
   if (player2.position.y + player2.size.height >= cH) {
-    player2.position.y = cH - player2.size.height;
+    player2.position.y = cH - player2.size.height -2;
   }
   if (player2.position.y <= 0) {
-    player2.position.y = 0;
+    player2.position.y = 2;
   }
 
   /* Players with the ball */
@@ -104,15 +149,15 @@ export function playersCollisions() {
   }
   if (
     ball.position.x + ball.velocity.x <=
-    player1.position.x + player1.size.width &&
+      player1.position.x + player1.size.width &&
     ball.position.x + ball.size.width + ball.velocity.x >=
-    player1.position.x + player1.size.width &&
+      player1.position.x + player1.size.width &&
     ball.position.y + ball.velocity.y <=
-    player1.position.y + player1.size.height + player1.velocity.y &&
+      player1.position.y + player1.size.height + player1.velocity.y &&
     ball.position.y + ball.size.height + ball.velocity.y >=
-    player1.position.y + (player1.size.height / 4) * 3 + player1.velocity.y
-    ) {
-      ball.velocity.y < 0 ? (ball.velocity.y *= -1) : (ball.velocity.y *= 1);
+      player1.position.y + (player1.size.height / 4) * 3 + player1.velocity.y
+  ) {
+    ball.velocity.y < 0 ? (ball.velocity.y *= -1) : (ball.velocity.y *= 1);
   }
 
   /* Front and Back */

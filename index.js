@@ -1,4 +1,9 @@
-import { ballCollisions, ballOut, playersCollisions } from "./collisions";
+import {
+  ballCollisions,
+  ballOut,
+  playersCollisions,
+  asteroidCollisions,
+} from "./collisions";
 import "./style.css";
 
 /* CONFIG ENVIRONMENT */
@@ -48,9 +53,12 @@ $("#turn-game-events").innerHTML = `Game Events: ${
   turnGameEvents ? "On" : "Off"
 }`;
 
+let turnAI;
+$("#turn-ai").innerHTML = `VS AI: ${turnAI ? "On" : "Off"}`;
+
 /* PLAYERS'S CLASS */
 class Sprite {
-  constructor({ position, velocity, speed, size, imageSrc }) {
+  constructor({ position, velocity, speed, size, imageSrc, color }) {
     this.position = position;
     this.velocity = velocity;
     this.speed = speed;
@@ -60,9 +68,17 @@ class Sprite {
     this.score = 0;
     this.image = new Image();
     this.image.src = imageSrc;
+    this.color = color ? color : "white";
   }
   draw() {
-    c.drawImage(this.image, this.position.x, this.position.y);
+    // c.drawImage(this.image, this.position.x, this.position.y);
+    c.fillStyle = this.color;
+    c.fillRect(
+      this.position.x,
+      this.position.y,
+      this.size.width,
+      this.size.height
+    );
   }
 
   update() {
@@ -86,7 +102,7 @@ export const player1 = new Sprite({
     width: 30,
     height: 100,
   },
-  imageSrc: "./assets/img/ship2.png",
+  imageSrc: "./assets/img/ship2.gif",
 });
 
 export const player2 = new Sprite({
@@ -102,7 +118,7 @@ export const player2 = new Sprite({
     width: 30,
     height: 100,
   },
-  imageSrc: "./assets/img/ship1.png",
+  imageSrc: "./assets/img/ship1.gif",
 });
 
 export const ball = new Sprite({
@@ -118,7 +134,7 @@ export const ball = new Sprite({
     width: 16,
     height: 16,
   },
-  imageSrc: "./assets/img/ball.png",
+  imageSrc: "./assets/img/ball.gif",
 });
 
 $("#score-p1").innerHTML = player1.score;
@@ -142,6 +158,12 @@ $("#plus-speed").addEventListener("click", function () {
 $("#turnSound").addEventListener("click", function () {
   soundMode = soundMode ? false : true;
   $("#turnSound").innerHTML = `Sound: ${soundMode ? "On" : "Off"}`;
+});
+
+/* VS AI on/off */
+$("#turn-ai").addEventListener("click", function () {
+  turnAI = turnAI ? false : true;
+  $("#turn-ai").innerHTML = `VS AI: ${turnAI ? "On" : "Off"}`;
 });
 
 /* Game Events on/off */
@@ -266,9 +288,18 @@ function asteroidsRain() {
         width: 30,
         height: 30,
       },
-      imageSrc: "./assets/img/asteroid.png",
+      imageSrc: "./assets/img/asteroid.gif",
+      color: "yellow",
     });
   }
+}
+
+function vsAi() {
+  if (!turnAI) return;
+  // if (ball.position.x + ball.size.width + ball.velocity.x > cW/2) {
+    player2.velocity.y = (ball.velocity.y < 0)? -3 : 3;
+    player2.position.y = player2.position.y + player2.velocity.y;
+  //}
 }
 
 function changeSpeedBall(newSpeed, ball) {
@@ -414,6 +445,10 @@ function animate() {
 
   /* Players */
   playersCollisions();
+
+  asteroidCollisions(asteroid);
+
+  vsAi();
 
   function gameOn() {
     player1.update();
