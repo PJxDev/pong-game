@@ -86,7 +86,7 @@ export const player1 = new Sprite({
     width: 30,
     height: 100,
   },
-  imageSrc: "./assets/img/ship2.gif",
+  imageSrc: "./assets/img/ship2.png",
 });
 
 export const player2 = new Sprite({
@@ -102,7 +102,7 @@ export const player2 = new Sprite({
     width: 30,
     height: 100,
   },
-  imageSrc: "./assets/img/ship1.gif",
+  imageSrc: "./assets/img/ship1.png",
 });
 
 export const ball = new Sprite({
@@ -118,7 +118,7 @@ export const ball = new Sprite({
     width: 16,
     height: 16,
   },
-  imageSrc: "./assets/img/ball.gif",
+  imageSrc: "./assets/img/ball.png",
 });
 
 $("#score-p1").innerHTML = player1.score;
@@ -266,7 +266,7 @@ function asteroidsRain() {
         width: 30,
         height: 30,
       },
-      imageSrc: "./assets/img/asteroid.gif",
+      imageSrc: "./assets/img/asteroid.png",
     });
   }
 }
