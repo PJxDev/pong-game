@@ -12,6 +12,10 @@ export const cH = (canvas.height = 576);
 c.fillRect(0, 0, cW, cH);
 $("#subtitle").innerHTML = "First getting 3 points wins!";
 
+export const bleep1 = new Audio('./assets/sfx/bleep1.mp3');
+export const bleep2 = new Audio('./assets/sfx/bleep2.mp3');
+export const point = new Audio('./assets/sfx/point.mp3');
+
 /* VARS AND CONSTS */
 export let reset = false;
 export let gameStarted = false;
@@ -96,8 +100,8 @@ export const ball = new Sprite({
     y: cH / 2 - 7,
   },
   velocity: {
-    x: 5,
-    y: 5,
+    x: 3,
+    y: 3,
   },
   size: {
     width: 15,
@@ -119,8 +123,8 @@ $(".start-button").addEventListener("click", () => {
     let ry = Math.floor(Math.random() * 2);
     ry = ry != 1 ? -1 : 1;
 
-    ball.velocity.x = 4 * rx;
-    ball.velocity.y = 4 * ry;
+    ball.velocity.x = 3 * rx;
+    ball.velocity.y = 3 * ry;
 
     pause = false;
   }
@@ -204,8 +208,8 @@ export function ballInit(n) {
 
   ball.position.x = cW / 2 - 7;
   ball.position.y = cH / 2 - 7;
-  ball.velocity.x = 4 * n;
-  ball.velocity.y = 4 * random;
+  ball.velocity.x = 3 * n;
+  ball.velocity.y = 3 * random;
   player1.position.x = 50;
   player1.position.y = cH / 2 - 50;
   player2.position.x = cW - 80;
