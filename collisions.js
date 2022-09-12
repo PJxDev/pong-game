@@ -10,10 +10,13 @@ import {
   bleep1,
   bleep2,
   point,
+  soundMode,
 } from "./index";
 
 function soundPlayers(){
   
+  if(!soundMode) return;
+
   let n = Math.floor(Math.random() * 2);
   n = n!==1 ? 2 : 1
   if (n===1){
@@ -47,7 +50,8 @@ export function ballCollisions(ballOut) {
 }
 /* BALL OUT */
 export function ballOut() {
-  point.play();
+  if (soundMode) point.play();
+  
   if (ball.position.x > 50) {
     $("#score-p1").innerHTML = ++player1.score;
     setTimeout(ballInit, 2000, -1);

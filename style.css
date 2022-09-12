@@ -29,6 +29,15 @@ body {
   min-height: 100vh;
 }
 
+a{
+  border: 2px solid white;
+}
+
+a:active{
+  border: 2px solid white;
+  transform: translate(0,2px);
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

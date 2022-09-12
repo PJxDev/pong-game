@@ -12,9 +12,10 @@ export const cH = (canvas.height = 576);
 c.fillRect(0, 0, cW, cH);
 $("#subtitle").innerHTML = "First getting 3 points wins!";
 
-export const bleep1 = new Audio('./assets/sfx/bleep1.mp3');
-export const bleep2 = new Audio('./assets/sfx/bleep2.mp3');
-export const point = new Audio('./assets/sfx/point.mp3');
+export const bleep1 = new Audio("./assets/sfx/bleep1.mp3");
+export const bleep2 = new Audio("./assets/sfx/bleep2.mp3");
+export const point = new Audio("./assets/sfx/point.mp3");
+
 
 /* VARS AND CONSTS */
 export let reset = false;
@@ -35,6 +36,12 @@ const keys = {
     pressed: false,
   },
 };
+export let soundMode = true;
+$("#turnSound").innerHTML = `Sound: ${soundMode ? "On" : "Off"}`;
+$("#turnSound").addEventListener("click", function () {
+  soundMode = soundMode ? false : true;
+  $("#turnSound").innerHTML = `Sound: ${soundMode ? "On" : "Off"}`;
+});
 
 /* PLAYERS'S CLASS */
 class Sprite {
