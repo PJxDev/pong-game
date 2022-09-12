@@ -163,6 +163,16 @@ $("#turnSound").addEventListener("click", function () {
 /* VS AI on/off */
 $("#turn-ai").addEventListener("click", function () {
   turnAI = turnAI ? false : true;
+  
+  currentSpeed += 1;
+  if (currentSpeed > 5) currentSpeed = 5;
+  changeSpeedBall(currentSpeed, ball);
+
+  turnGameEvents = true;
+  $("#turn-game-events").innerHTML = `Game Events: ${
+    turnGameEvents ? "On" : "Off"
+  }`
+
   $("#turn-ai").innerHTML = `VS AI: ${turnAI ? "On" : "Off"}`;
 });
 
