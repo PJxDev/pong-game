@@ -45,22 +45,25 @@ $("#turnSound").addEventListener("click", function () {
 
 /* PLAYERS'S CLASS */
 class Sprite {
-  constructor({ position, velocity, size }) {
+  constructor({ position, velocity, size, imageSrc }) {
     this.position = position;
     this.velocity = velocity;
     this.size = size;
     this.lastKey = "";
     this.direction = { x: 1, y: 1 };
     this.score = 0;
+    this.image = new Image();
+    this.image.src = imageSrc;
   }
   draw() {
-    c.fillStyle = "white";
-    c.fillRect(
-      this.position.x,
-      this.position.y,
-      this.size.width,
-      this.size.height
-    );
+    c.drawImage(this.image, this.position.x, this.position.y)
+    // c.fillStyle = "white";
+    // c.fillRect(
+    //   this.position.x,
+    //   this.position.y,
+    //   this.size.width,
+    //   this.size.height
+    // );
   }
 
   update() {
@@ -84,6 +87,7 @@ export const player1 = new Sprite({
     width: 30,
     height: 100,
   },
+  imageSrc: "./assets/img/ship2.gif"
 });
 
 export const player2 = new Sprite({
@@ -99,6 +103,7 @@ export const player2 = new Sprite({
     width: 30,
     height: 100,
   },
+  imageSrc: "./assets/img/ship1.gif"
 });
 
 export const ball = new Sprite({
@@ -111,9 +116,10 @@ export const ball = new Sprite({
     y: 3,
   },
   size: {
-    width: 15,
-    height: 15,
+    width: 16,
+    height: 16,
   },
+  imageSrc: "./assets/img/ball.gif"
 });
 
 $("#score-p1").innerHTML = player1.score;
