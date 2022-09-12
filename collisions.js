@@ -49,9 +49,11 @@ export function ballCollisions(ballOut) {
   }
 }
 /* BALL OUT */
-export function ballOut() {
+export function ballOut(timer, setTimer) {
   if (soundMode) point.play();
-  
+
+  clearInterval(setTimer);
+  timer = 0;
   if (ball.position.x > 50) {
     $("#score-p1").innerHTML = ++player1.score;
     setTimeout(ballInit, 2000, -1);

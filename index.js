@@ -16,12 +16,15 @@ export const bleep1 = new Audio("./assets/sfx/bleep1.mp3");
 export const bleep2 = new Audio("./assets/sfx/bleep2.mp3");
 export const point = new Audio("./assets/sfx/point.mp3");
 
-
 /* VARS AND CONSTS */
 export let reset = false;
 export let gameStarted = false;
 export let pause = false;
 export let oldVelocity = { x: 0, y: 0 };
+let currentSpeed = 3;
+let timer = 0;
+let setTimer;
+const asteroid = [];
 const keys = {
   w: {
     pressed: false,
@@ -36,18 +39,21 @@ const keys = {
     pressed: false,
   },
 };
+
 export let soundMode = true;
 $("#turnSound").innerHTML = `Sound: ${soundMode ? "On" : "Off"}`;
-$("#turnSound").addEventListener("click", function () {
-  soundMode = soundMode ? false : true;
-  $("#turnSound").innerHTML = `Sound: ${soundMode ? "On" : "Off"}`;
-});
+
+let turnGameEvents;
+$("#turn-game-events").innerHTML = `Game Events: ${
+  turnGameEvents ? "On" : "Off"
+}`;
 
 /* PLAYERS'S CLASS */
 class Sprite {
-  constructor({ position, velocity, size, imageSrc }) {
+  constructor({ position, velocity, speed, size, imageSrc }) {
     this.position = position;
     this.velocity = velocity;
+    this.speed = speed;
     this.size = size;
     this.lastKey = "";
     this.direction = { x: 1, y: 1 };
@@ -56,14 +62,7 @@ class Sprite {
     this.image.src = imageSrc;
   }
   draw() {
-    c.drawImage(this.image, this.position.x, this.position.y)
-    // c.fillStyle = "white";
-    // c.fillRect(
-    //   this.position.x,
-    //   this.position.y,
-    //   this.size.width,
-    //   this.size.height
-    // );
+    c.drawImage(this.image, this.position.x, this.position.y);
   }
 
   update() {
@@ -87,7 +86,7 @@ export const player1 = new Sprite({
     width: 30,
     height: 100,
   },
-  imageSrc: "./assets/img/ship2.gif"
+  imageSrc: "./assets/img/ship2.gif",
 });
 
 export const player2 = new Sprite({
@@ -103,7 +102,7 @@ export const player2 = new Sprite({
     width: 30,
     height: 100,
   },
-  imageSrc: "./assets/img/ship1.gif"
+  imageSrc: "./assets/img/ship1.gif",
 });
 
 export const ball = new Sprite({
@@ -112,20 +111,52 @@ export const ball = new Sprite({
     y: cH / 2 - 7,
   },
   velocity: {
-    x: 3,
-    y: 3,
+    x: 1,
+    y: 1,
   },
   size: {
     width: 16,
     height: 16,
   },
-  imageSrc: "./assets/img/ball.gif"
+  imageSrc: "./assets/img/ball.gif",
 });
 
 $("#score-p1").innerHTML = player1.score;
 $("#score-p2").innerHTML = player2.score;
 
 /* EVENTS */
+
+/* Change difficult */
+$("#minus-speed").addEventListener("click", function () {
+  currentSpeed -= 1;
+  if (currentSpeed < 1) currentSpeed = 1;
+  changeSpeedBall(currentSpeed, ball);
+});
+$("#plus-speed").addEventListener("click", function () {
+  currentSpeed += 1;
+  if (currentSpeed > 5) currentSpeed = 5;
+  changeSpeedBall(currentSpeed, ball);
+});
+
+/* Sound on/off */
+$("#turnSound").addEventListener("click", function () {
+  soundMode = soundMode ? false : true;
+  $("#turnSound").innerHTML = `Sound: ${soundMode ? "On" : "Off"}`;
+});
+
+/* Game Events on/off */
+$("#turn-game-events").addEventListener("click", function () {
+  turnGameEvents = turnGameEvents ? false : true;
+
+  if (!turnGameEvents) {
+    timer = 0;
+    clearInterval(setTimer);
+  }
+
+  $("#turn-game-events").innerHTML = `Game Events: ${
+    turnGameEvents ? "On" : "Off"
+  }`;
+});
 
 /* Start Button */
 $(".start-button").addEventListener("click", () => {
@@ -136,10 +167,13 @@ $(".start-button").addEventListener("click", () => {
     let ry = Math.floor(Math.random() * 2);
     ry = ry != 1 ? -1 : 1;
 
-    ball.velocity.x = 3 * rx;
-    ball.velocity.y = 3 * ry;
+    ball.velocity.x = ball.speed * rx;
+    ball.velocity.y = ball.speed * ry;
 
     pause = false;
+    timer = 0;
+    if (!turnGameEvents) return;
+    setTimer = setInterval(() => timer++, 1000);
   }
 
   if (reset) {
@@ -199,6 +233,72 @@ window.addEventListener("keyup", (e) => {
 });
 
 /* FUNCTIONS */
+
+let once = false;
+
+function gameEvents() {
+  if (!turnGameEvents) return;
+  if (timer % 10 === 0 && timer != 0) {
+    asteroidsRain();
+  } else once = false;
+}
+
+function asteroidsRain() {
+  if (once) return;
+  once = true;
+  let random = (n) => {
+    let numberRandom = Math.floor(Math.random() * n);
+    if (numberRandom === 0) return 1;
+    return numberRandom;
+  };
+  let asteroidArrayLength = asteroid.length - 1;
+  for (let i = 0; i < 7; i++) {
+    asteroid[asteroidArrayLength + i] = new Sprite({
+      position: {
+        x: random(400),
+        y: random(100) * i * -1,
+      },
+      velocity: {
+        x: 0.5,
+        y: random(3),
+      },
+      size: {
+        width: 30,
+        height: 30,
+      },
+      imageSrc: "./assets/img/asteroid.gif",
+    });
+  }
+}
+
+function changeSpeedBall(newSpeed, ball) {
+  ball.speed = newSpeed;
+  let dificulty = "";
+  switch (ball.speed) {
+    case 1: {
+      dificulty = "Very easy";
+      break;
+    }
+    case 2: {
+      dificulty = "Easy";
+      break;
+    }
+    case 3: {
+      dificulty = "Normal";
+      break;
+    }
+    case 4: {
+      dificulty = "Hard";
+      break;
+    }
+    case 5: {
+      dificulty = "Very hard";
+      break;
+    }
+  }
+  $("#ball-speed").innerHTML = `Ball Speed: ${dificulty}`;
+}
+
 function pauseGame() {
   pause = pause ? false : true;
 
@@ -209,9 +309,24 @@ function pauseGame() {
     oldVelocity.y = ball.velocity.y;
     ball.velocity.x = 0;
     ball.velocity.y = 0;
+
+    asteroid.forEach((el) => {
+      el.speed = el.velocity.y;
+      el.velocity.y = 0;
+      el.velocity.x = 0;
+    });
+
+    clearInterval(setTimer);
   } else {
     ball.velocity.x = oldVelocity.x;
     ball.velocity.y = oldVelocity.y;
+
+    asteroid.forEach((el) => {
+      el.velocity.y = el.speed;
+      el.velocity.x = 0.5;
+    });
+    if (!turnGameEvents) return;
+    setTimer = setInterval(() => timer++, 1000);
   }
 }
 
@@ -221,17 +336,23 @@ export function ballInit(n) {
 
   ball.position.x = cW / 2 - 7;
   ball.position.y = cH / 2 - 7;
-  ball.velocity.x = 3 * n;
-  ball.velocity.y = 3 * random;
+  ball.velocity.x = ball.speed * n;
+  ball.velocity.y = ball.speed * random;
   player1.position.x = 50;
   player1.position.y = cH / 2 - 50;
   player2.position.x = cW - 80;
   player2.position.y = cH / 2 - 50;
+
+  clearInterval(setTimer);
+  timer = 0;
+  if (!turnGameEvents) return;
+  setTimer = setInterval(() => timer++, 1000);
 }
 
 export function endGame() {
   gameStarted = false;
   reset = true;
+  clearInterval(setTimer);
 }
 
 /* ANIMATE FUNCTION */
@@ -253,6 +374,7 @@ function animate() {
   c.lineTo(0, 0);
   c.stroke();
 
+  changeSpeedBall(currentSpeed, ball);
   player1.draw();
   player2.draw();
 
@@ -287,7 +409,6 @@ function animate() {
   }
 
   /* COLLISIONS */
-
   /* Ball */
   ballCollisions(ballOut);
 
@@ -298,7 +419,10 @@ function animate() {
     player1.update();
     player2.update();
     ball.update();
+    gameEvents();
+    asteroid.forEach((element) => {
+      element.update();
+    });
   }
 }
-
 animate();
